@@ -1,0 +1,45 @@
+-- Create Student Database
+CREATE TABLE IF NOT EXISTS students (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(100) NOT NULL,
+    regno VARCHAR(20) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL,
+    department VARCHAR(50) NOT NULL,
+    year VARCHAR(20) NOT NULL
+);
+
+
+-- Insert Sample Student Records
+
+INSERT INTO students
+(name, regno, email, department, year)
+VALUES
+('Arun Kumar', '23CS001', 'arun@gmail.com', 'CSE', '3rd Year');
+
+INSERT INTO students
+(name, regno, email, department, year)
+VALUES
+('Priya S', '23AI002', 'priya@gmail.com', 'AIML', '3rd Year');
+
+INSERT INTO students
+(name, regno, email, department, year)
+VALUES
+('Rahul M', '24EC003', 'rahul@gmail.com', 'ECE', '2nd Year');
+
+
+-- Display all students
+
+SELECT * FROM students;
+
+
+-- Update a student
+
+UPDATE students
+SET email = 'arun123@gmail.com'
+WHERE regno = '23CS001';
+
+
+-- Delete a student
+
+DELETE FROM students
+WHERE regno = '24EC003';
