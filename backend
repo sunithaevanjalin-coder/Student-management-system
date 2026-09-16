@@ -1,0 +1,256 @@
+from flask import Flask, request, jsonify
+import sqlite3
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+DATABASE = "students.db"
+
+
+# ---------------- DATABASE ----------------
+
+def get_db():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def create_table():
+
+    conn = get_db()
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS students (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            regno TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL,
+            department TEXT NOT NULL,
+            year TEXT NOT NULL
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+# ---------------- CREATE ----------------
+
+@app.route("/api/students", methods=["POST"])
+def add_student():
+
+    data = request.json
+
+    name = data.get("name")
+    regno = data.get("regno")
+    email = data.get("email")
+    department = data.get("department")
+    year = data.get("year")
+
+    if not name or not regno or not email or not department or not year:
+        return jsonify({
+            "error": "All fields are required"
+        }), 400
+
+    try:
+
+        conn = get_db()
+
+        conn.execute("""
+            INSERT INTO students
+            (name, regno, email, department, year)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            name,
+            regno,
+            email,
+            department,
+            year
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "message": "Student added successfully"
+        }), 201
+
+    except sqlite3.IntegrityError:
+
+        return jsonify({
+            "error": "Register number already exists"
+        }), 400
+
+
+# ---------------- READ ALL ----------------
+
+@app.route("/api/students", methods=["GET"])
+def get_students():
+
+    conn = get_db()
+
+    students = conn.execute(
+        "SELECT * FROM students"
+    ).fetchall()
+
+    conn.close()
+
+    result = []
+
+    for student in students:
+
+        result.append({
+            "id": student["id"],
+            "name": student["name"],
+            "regno": student["regno"],
+            "email": student["email"],
+            "department": student["department"],
+            "year": student["year"]
+        })
+
+    return jsonify(result)
+
+
+# ---------------- READ ONE ----------------
+
+@app.route("/api/students/<int:id>", methods=["GET"])
+def get_student(id):
+
+    conn = get_db()
+
+    student = conn.execute(
+        "SELECT * FROM students WHERE id = ?",
+        (id,)
+    ).fetchone()
+
+    conn.close()
+
+    if student is None:
+
+        return jsonify({
+            "error": "Student not found"
+        }), 404
+
+    return jsonify({
+        "id": student["id"],
+        "name": student["name"],
+        "regno": student["regno"],
+        "email": student["email"],
+        "department": student["department"],
+        "year": student["year"]
+    })
+
+
+# ---------------- UPDATE ----------------
+
+@app.route("/api/students/<int:id>", methods=["PUT"])
+def update_student(id):
+
+    data = request.json
+
+    name = data.get("name")
+    regno = data.get("regno")
+    email = data.get("email")
+    department = data.get("department")
+    year = data.get("year")
+
+    if not name or not regno or not email or not department or not year:
+
+        return jsonify({
+            "error": "All fields are required"
+        }), 400
+
+    conn = get_db()
+
+    student = conn.execute(
+        "SELECT * FROM students WHERE id = ?",
+        (id,)
+    ).fetchone()
+
+    if student is None:
+
+        conn.close()
+
+        return jsonify({
+            "error": "Student not found"
+        }), 404
+
+    try:
+
+        conn.execute("""
+            UPDATE students
+            SET name = ?,
+                regno = ?,
+                email = ?,
+                department = ?,
+                year = ?
+            WHERE id = ?
+        """, (
+            name,
+            regno,
+            email,
+            department,
+            year,
+            id
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({
+            "message": "Student updated successfully"
+        })
+
+    except sqlite3.IntegrityError:
+
+        conn.close()
+
+        return jsonify({
+            "error": "Register number already exists"
+        }), 400
+
+
+# ---------------- DELETE ----------------
+
+@app.route("/api/students/<int:id>", methods=["DELETE"])
+def delete_student(id):
+
+    conn = get_db()
+
+    student = conn.execute(
+        "SELECT * FROM students WHERE id = ?",
+        (id,)
+    ).fetchone()
+
+    if student is None:
+
+        conn.close()
+
+        return jsonify({
+            "error": "Student not found"
+        }), 404
+
+    conn.execute(
+        "DELETE FROM students WHERE id = ?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "message": "Student deleted successfully"
+    })
+
+
+# ---------------- START SERVER ----------------
+
+if __name__ == "__main__":
+
+    create_table()
+
+    app.run(
+        debug=True,
+        port=5000
+    )
