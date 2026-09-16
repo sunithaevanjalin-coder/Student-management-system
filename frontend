@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Student Management System</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Student Management System</h1>
+
+        <p>Manage Student Records</p>
+
+
+        <!-- Student Form -->
+
+        <div class="form-box">
+
+            <h2>Add Student</h2>
+
+            <form id="studentForm">
+
+                <input
+                    type="hidden"
+                    id="studentId"
+                >
+
+                <input
+                    type="text"
+                    id="name"
+                    placeholder="Student Name"
+                    required
+                >
+
+                <input
+                    type="text"
+                    id="regno"
+                    placeholder="Register Number"
+                    required
+                >
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Email"
+                    required
+                >
+
+                <select id="department" required>
+
+                    <option value="">
+                        Select Department
+                    </option>
+
+                    <option value="CSE">
+                        CSE
+                    </option>
+
+                    <option value="AIML">
+                        AIML
+                    </option>
+
+                    <option value="ECE">
+                        ECE
+                    </option>
+
+                    <option value="EEE">
+                        EEE
+                    </option>
+
+                    <option value="MECH">
+                        MECH
+                    </option>
+
+                </select>
+
+
+                <select id="year" required>
+
+                    <option value="">
+                        Select Year
+                    </option>
+
+                    <option value="1st Year">
+                        1st Year
+                    </option>
+
+                    <option value="2nd Year">
+                        2nd Year
+                    </option>
+
+                    <option value="3rd Year">
+                        3rd Year
+                    </option>
+
+                    <option value="4th Year">
+                        4th Year
+                    </option>
+
+                </select>
+
+
+                <button type="submit">
+                    Save Student
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- Search -->
+
+        <input
+            type="text"
+            id="search"
+            placeholder="Search student..."
+        >
+
+
+        <!-- Student Table -->
+
+        <div class="table-box">
+
+            <h2>Student Records</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Register No</th>
+                        <th>Email</th>
+                        <th>Department</th>
+                        <th>Year</th>
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="studentTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
